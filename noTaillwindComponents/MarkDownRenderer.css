@@ -1,0 +1,27 @@
+
+ul{
+    list-style: disc;
+}
+
+ol{
+    list-style: decimal;
+}
+
+p>strong{
+    display: block;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h1{
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 0rem;
+}
+
+p>code{
+    color: rgb(130, 113, 17);
+    @apply shadow-lg border-2 border-slate-200 my-4 p-4 rounded-lg block;
+}
