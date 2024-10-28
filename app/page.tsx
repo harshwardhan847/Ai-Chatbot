@@ -9,6 +9,17 @@ export default function Page() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop } =
     useChat({
       keepLastMessageOnError: true,
+      onFinish: (message, { usage, finishReason }) => {
+        console.log("Finished streaming message:", message);
+        console.log("Token usage:", usage);
+        console.log("Finish reason:", finishReason);
+      },
+      onError: (error) => {
+        console.error("An error occurred:", error);
+      },
+      onResponse: (response) => {
+        console.log("Received HTTP response from server:", response);
+      },
     });
 
   return (

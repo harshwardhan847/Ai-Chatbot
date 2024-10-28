@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { solarizedlight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import MarkdownRenderer from "@/noTaillwindComponents/MarkdownRenderer";
 import { splitCodeFromText } from "@/utils";
+import { Weather } from "../ai/components/Weather";
 type Props = {
   messages: Message[];
 };
@@ -26,11 +27,42 @@ const Messages = ({ messages }: Props) => {
     }
     return { style };
   };
-  const getAiResponse = useCallback((message?: string) => {
+  const getAiResponse = useCallback((message: Message) => {
     console.log(message);
     if (!message) return null;
-    const processedChat = splitCodeFromText(message);
+
+    if (message.toolInvocations) {
+      return (
+        <div>
+          {message.toolInvocations?.map((toolInvocation) => {
+            const { toolName, toolCallId, state } = toolInvocation;
+
+            if (state === "result") {
+              if (toolName === "weatherTool") {
+                const { result } = toolInvocation;
+                return (
+                  <div key={toolCallId}>
+                    <Weather {...result} />
+                  </div>
+                );
+              }
+            } else {
+              return (
+                <div key={toolCallId}>
+                  {toolName === "weatherTool" ? (
+                    <div>Loading weather...</div>
+                  ) : null}
+                </div>
+              );
+            }
+          })}
+        </div>
+      );
+    }
+
+    const processedChat = splitCodeFromText(message.content);
     console.log(processedChat);
+
     const result = processedChat.map((value, index) => {
       return value.isCode ? (
         <div key={index + value?.text?.substring(0, 20)}>
@@ -64,9 +96,7 @@ const Messages = ({ messages }: Props) => {
           : " self-start  w-full text-start text-pretty"
       )}
     >
-      {message.role === "user"
-        ? message?.content
-        : getAiResponse(message?.content)}
+      {message.role === "user" ? message?.content : getAiResponse(message)}
       <div ref={bottomOfMessagesRef} />
     </div>
   ));
